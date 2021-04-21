@@ -1,0 +1,20 @@
+- hosts: mongodb
+  serial: 1
+  tasks:
+  - name: Prepare RAID
+    shell: mongo/prepare_raid.sh
+
+- hosts: ycsb
+  serial: 2
+  tasks:
+  - name: Recreate DB
+    shell: "echo 0 > YCSB/db_records"
+  - name: Run load tests
+    shell: YCSB/launch_load.sh > log
+    args:
+      executable: /bin/bash
+  - name: Fetch log
+    fetch:
+      src: log
+      dest: test_raid_log.txt
+      flat: true

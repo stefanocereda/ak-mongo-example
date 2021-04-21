@@ -1,0 +1,26 @@
+- name: create scripts directory
+  file:
+    path: /home/ubuntu/mongo
+    state: directory
+    mode: 0755
+    owner: ubuntu
+
+- name: Copy scripts
+  copy:
+   src: .
+   dest: /home/ubuntu/mongo/
+   mode: preserve
+   owner: ubuntu
+
+- name: Install MongoDB
+  shell: bash /home/ubuntu/mongo/setup.sh
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: true
+
+- name: Install python-is-python3
+  become: true
+  apt:
+    name: python-is-python3

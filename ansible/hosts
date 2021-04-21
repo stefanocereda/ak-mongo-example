@@ -1,0 +1,21 @@
+all:
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: /home/ubuntu/.ssh/id_rsa
+    ycsb_fqdn: CLIENT-PRIVATE-IP
+    mongodb_fqdn: SERVER-PRIVATE-IP
+
+master:
+  hosts:
+    local:
+      ansible_host: localhost
+
+mongodb:
+  hosts:
+    mongodb-server:
+      ansible_host: SERVER-PUBLIC-IP
+
+ycsb:
+  hosts:
+    mongo-client:
+      ansible_host: CLIENT-PUBLIC-IP

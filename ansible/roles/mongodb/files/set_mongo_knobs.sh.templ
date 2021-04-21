@@ -1,0 +1,68 @@
+#!/bin/sh
+
+mongodb_cursorTimeoutMillis=${MongoDB.mongodb_cursorTimeoutMillis}
+mongodb_notablescan=${MongoDB.mongodb_notablescan}
+mongodb_ttlMonitorEnabled=${MongoDB.mongodb_ttlMonitorEnabled}
+mongodb_disableJavaScriptJIT=${MongoDB.mongodb_disableJavaScriptJIT}
+mongodb_maxIndexBuildMemoryUsageMegabytes=${MongoDB.mongodb_maxIndexBuildMemoryUsageMegabytes}
+mongodb_tcmallocReleaseRate=${MongoDB.mongodb_tcmallocReleaseRate}
+mongodb_journalCommitInterval=${MongoDB.mongodb_journalCommitInterval}
+mongodb_syncdelay=${MongoDB.mongodb_syncdelay}
+mongodb_wiredTigerEngineRuntimeConfig_cache_overhead=${MongoDB.mongodb_wterc_cache_overhead}
+mongodb_wiredTigerEngineRuntimeConfig_cache_size=${MongoDB.mongodb_wterc_cache_size}
+mongodb_wiredTigerEngineRuntimeConfig_checkpoint_log_size=${MongoDB.mongodb_wterc_checkpoint_log_size}
+mongodb_wiredTigerEngineRuntimeConfig_checkpoint_wait=${MongoDB.mongodb_wterc_checkpoint_wait}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_threads_max=${MongoDB.mongodb_wterc_eviction_threads_max}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_threads_min=${MongoDB.mongodb_wterc_eviction_threads_min}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_checkpoint_target=${MongoDB.mongodb_wterc_eviction_checkpoint_target}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_dirty_target=${MongoDB.mongodb_wterc_eviction_dirty_target}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_dirty_trigger=${MongoDB.mongodb_wterc_eviction_dirty_trigger}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_target=${MongoDB.mongodb_wterc_eviction_target}
+mongodb_wiredTigerEngineRuntimeConfig_eviction_trigger=${MongoDB.mongodb_wterc_eviction_trigger}
+mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_handle_minimum=${MongoDB.mongodb_wterc_file_manager_close_handle_minimum}
+mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_idle_time=${MongoDB.mongodb_wterc_file_manager_close_idle_time}
+mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_scan_interval=${MongoDB.mongodb_wterc_file_manager_close_scan_interval}
+mongodb_wiredTigerEngineRuntimeConfig_log_archive=${MongoDB.mongodb_wterc_log_archive}
+mongodb_wiredTigerEngineRuntimeConfig_log_prealloc=${MongoDB.mongodb_wterc_log_prealloc}
+mongodb_wiredTigerEngineRuntimeConfig_log_zero_fill=${MongoDB.mongodb_wterc_log_zero_fill}
+mongodb_wiredTigerEngineRuntimeConfig_lsm_manager_merge=${MongoDB.mongodb_wterc_lsm_manager_merge}
+mongodb_wiredTigerEngineRuntimeConfig_lsm_manager_worker_threads_max=${MongoDB.mongodb_wterc_lsm_manager_worker_threads_max}
+mongodb_wiredTigerEngineRuntimeConfig_shared_cache_chunk=${MongoDB.mongodb_wterc_shared_cache_chunk}
+mongodb_wiredTigerEngineRuntimeConfig_shared_cache_name=${MongoDB.mongodb_wterc_shared_cache_name}
+mongodb_wiredTigerEngineRuntimeConfig_shared_cache_quota=${MongoDB.mongodb_wterc_shared_cache_quota}
+mongodb_wiredTigerEngineRuntimeConfig_shared_cache_reserve=${MongoDB.mongodb_wterc_shared_cache_reserve}
+mongodb_wiredTigerEngineRuntimeConfig_shared_cache_size=${MongoDB.mongodb_wterc_shared_cache_size}
+
+mongo --quiet --eval "db.adminCommand( {setParameter: 1,
+'cursorTimeoutMillis': ${mongodb_cursorTimeoutMillis},
+'notablescan': ${mongodb_notablescan},
+'ttlMonitorEnabled': ${mongodb_ttlMonitorEnabled},
+'disableJavaScriptJIT': ${mongodb_disableJavaScriptJIT},
+'maxIndexBuildMemoryUsageMegabytes': ${mongodb_maxIndexBuildMemoryUsageMegabytes},
+'tcmallocReleaseRate': ${mongodb_tcmallocReleaseRate},
+'journalCommitInterval': ${mongodb_journalCommitInterval},
+'syncdelay': ${mongodb_syncdelay},
+'wiredTigerEngineRuntimeConfig': 'cache_overhead=${mongodb_wiredTigerEngineRuntimeConfig_cache_overhead},\
+cache_size=${mongodb_wiredTigerEngineRuntimeConfig_cache_size}M,\
+checkpoint=(log_size=${mongodb_wiredTigerEngineRuntimeConfig_checkpoint_log_size},\
+            wait=${mongodb_wiredTigerEngineRuntimeConfig_checkpoint_wait}),\
+eviction=(threads_max=${mongodb_wiredTigerEngineRuntimeConfig_eviction_threads_max},\
+          threads_min=${mongodb_wiredTigerEngineRuntimeConfig_eviction_threads_min}),\
+eviction_checkpoint_target=${mongodb_wiredTigerEngineRuntimeConfig_eviction_checkpoint_target},\
+eviction_dirty_target=${mongodb_wiredTigerEngineRuntimeConfig_eviction_dirty_target},\
+eviction_dirty_trigger=${mongodb_wiredTigerEngineRuntimeConfig_eviction_dirty_trigger},\
+eviction_target=${mongodb_wiredTigerEngineRuntimeConfig_eviction_target},\
+eviction_trigger=${mongodb_wiredTigerEngineRuntimeConfig_eviction_trigger},\
+file_manager=(close_handle_minimum=${mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_handle_minimum},\
+              close_idle_time=${mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_idle_time},\
+  	    close_scan_interval=${mongodb_wiredTigerEngineRuntimeConfig_file_manager_close_scan_interval}),\
+log=(archive=${mongodb_wiredTigerEngineRuntimeConfig_log_archive},\
+     prealloc=${mongodb_wiredTigerEngineRuntimeConfig_log_prealloc},\
+     zero_fill=${mongodb_wiredTigerEngineRuntimeConfig_log_zero_fill}),\
+lsm_manager=(merge=${mongodb_wiredTigerEngineRuntimeConfig_lsm_manager_merge},\
+             worker_thread_max=${mongodb_wiredTigerEngineRuntimeConfig_lsm_manager_worker_threads_max}),\
+shared_cache=(chunk=${mongodb_wiredTigerEngineRuntimeConfig_shared_cache_chunk}M,\
+                                            name=${mongodb_wiredTigerEngineRuntimeConfig_shared_cache_name},\
+					    quota=${mongodb_wiredTigerEngineRuntimeConfig_shared_cache_quota},\
+					    reserve=${mongodb_wiredTigerEngineRuntimeConfig_shared_cache_reserve},\
+					    size=${mongodb_wiredTigerEngineRuntimeConfig_shared_cache_size}M)'})"

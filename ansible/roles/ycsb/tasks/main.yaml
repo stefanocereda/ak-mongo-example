@@ -1,0 +1,51 @@
+- name: download ycsb
+  get_url:
+    url: https://github.com/brianfrankcooper/YCSB/releases/download/0.17.0/ycsb-0.17.0.tar.gz
+    dest: /home/ubuntu
+
+- name: unarchive ycsb
+  ansible.builtin.unarchive:
+    src: /home/ubuntu/ycsb-0.17.0.tar.gz
+    dest: /home/ubuntu
+    remote_src: yes
+
+- name: create scripts directory
+  file:
+    path: /home/ubuntu/YCSB
+    state: directory
+    mode: 0755
+    owner: ubuntu
+
+- name: Copy client files
+  copy:
+   src: .
+   dest: /home/ubuntu/YCSB/
+   mode: preserve
+   owner: ubuntu
+
+- name: Copy launch_load template
+  template:
+   src: launch_load.sh
+   dest: /home/ubuntu/YCSB/launch_load.sh
+   mode: '+x'
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: true
+
+- name: Install python-is-python2
+  # ycsb wants python 2....in 2021....not even calibre
+  become: true
+  apt:
+    name: python-is-python2
+
+- name: Install mongodb-clients
+  become: true
+  apt:
+    name: mongodb-clients
+
+- name: Install openjdk-14-jre-headless
+  become: true
+  apt:
+    name: openjdk-14-jre-headless

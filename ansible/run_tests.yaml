@@ -1,0 +1,11 @@
+- hosts: ycsb
+  tasks:
+  - name: Run load tests
+    shell: YCSB/launch_load.sh > log
+    args:
+      executable: /bin/bash
+  - name: Fetch log
+    fetch:
+      src: log
+      dest: test_log.txt 
+      flat: true

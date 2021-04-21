@@ -1,0 +1,3 @@
+- split the tests in different ansible tasks, each one with its own log file
+- integrate a log parser, I'm using the one from Akamas MongoDB component
+- automate the spreadsheet creation

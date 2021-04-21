@@ -1,0 +1,60 @@
+- hosts: all
+  roles:
+    - cloudalchemy.node_exporter
+
+- hosts: mongodb
+  roles:
+    - mongodb
+
+- hosts: ycsb
+  roles:
+    - ycsb
+
+- hosts: master
+  roles:
+    - role: cloudalchemy.prometheus
+      vars:
+        prometheus_storage_retention_size: 2GB
+        prometheus_global:
+          scrape_interval: 2s
+          evaluation_interval: 5s
+        prometheus_scrape_configs:
+          - job_name: 'mongodb-server'
+            static_configs:
+              - targets: ['{{ mongodb_fqdn }}:9100']
+            relabel_configs:
+              - source_labels: ["__address__"]
+                regex: ".*"
+                target_label: "instance"
+                replacement: "MongoDB"
+          - job_name: 'ycsb-client'
+            static_configs:
+              - targets: ['{{ ycsb_fqdn }}:9100']
+            relabel_configs:
+              - source_labels: ["__address__"]
+                regex: ".*"
+                target_label: "instance"
+                replacement: "YCSB"
+          - job_name: 'master'
+            static_configs:
+              - targets: ['localhost:9100']
+            relabel_configs:
+              - source_labels: ["__address__"]
+                regex: ".*"
+                target_label: "instance"
+                replacement: "master"
+    - role: cloudalchemy.grafana
+      vars:
+        grafana_security:
+          admin_user: 'admin'
+          admin_password: 'changeme'
+        grafana_datasources:
+          - name: prometheus
+            type: prometheus
+            access: proxy
+            url: 'http://localhost:9090'
+            basicAuth: false
+        grafana_dashboards:
+          - dashboard_id: 1860
+            revision_id: 22
+            datasource: prometheus
