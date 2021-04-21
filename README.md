@@ -96,7 +96,7 @@ ansible-playbook -i hosts run_tests_raid.yaml
 cat test_raid_log.txt
 ```
 
-With the 4-disk RAID, we see that the database has become slower (X_max=3467), but at least the throughput is stable.
+With the 4-disk RAID, we see that the database has become slower (X_max=3467 ops/sec), but at least the throughput is stable.
 Looking at the grafana dashboard, we do not see any sudden change in the metrics:
 http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618994250466&to=1618998649012&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
 Hoewer, we see that we still have a very high iowait.
@@ -123,8 +123,9 @@ ansible-playbook -i hosts run_tests_ext4.yaml
 cat test_ext4_log.txt
 ```
 
-With this configuration the throughput goes up to TODO, while remaining stable
-TODO grafana
+With this configuration the throughput goes up to 4510 ops/sec, while remaining stable
+http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1619006877305&to=1619011158033&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+
 
 Ouch! MongoDB production notes are wrong! Or maybe the optimal configuration depends on you workload?
 Let's find out with https://www.akamas.io/
