@@ -74,16 +74,17 @@ You can look at the mongo.ods file for the analysis, but the takeaway message is
 
 ## A longer test
 As we said, after the initial short tests we run a longer one. In this test we are not only interested in the *average* throughput obtain during the whole test, but we are interested in how stable is the throughput.
-As the test proceeds we observe that, after a while (~ half an hour), the throughput _drammatically_ drops.
+As the test proceeds we observe that, after a while (~ half an hour), the throughput _drammatically_ drops (you can also view this on the second page of the spreadsheet).
 
 At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618989229211&to=1618994400198&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+(login with user/user)
 
 By looking at the high iowait time in the CPU basic graph, we start to suspect a problem in the disk.
 We then move to the Storage Disk panel, and observe a drop in the disk IOPS and R/W values.
 At this point we immediately detect our mistake: we are running our DBMS on an Amazon instance with a burstable amount of IOPS, meaning that we can substain high IO rates for a certain amount of time, but then they will be reduced.
 (Notice, however, that we need to already have this piece of information in order to detect the problem.)
 
-At this point we decide to move the database to a much faster disk, which is not burstable. While we're at it, we also decide to use a RAID-0, which should give use much higher performance.
+At this point we decide to move the database to another disk, which is not burstable. While we're at it, we also decide to use a RAID-0, which should give use much higher performance.
 
 
 ## Adding a RAID-0
@@ -107,14 +108,14 @@ At this point, we try to remove the RAID and use a single disk:
 ansible-playbook -i hosts run_tests_noraid.yaml
 cat test_noraid_log.txt
 ```
-The throughput is stable, and equal to the one we had with the RAID!
+The throughput is stable, and equal to the one we had with the RAID! Essentialy we have reduced cost by 75%, whitout impacting performance.
 
 
 ## Changing the filesystem
 We still are not happy with performance. We thus look at mongodb configuration suggestions:
-https://docs.mongodb.com/manual/administration/production-notes/
+https://docs.mongodb.com/manual/administration/production-notes/#kernel-and-file-systems
 Where we discover that:
-> When running MongoDB in production on Linux, you should use Linux kernel version 2.6.36 or later, with either the XFS or EXT4 filesystem. If possible, use XFS as it generally performs better with MongoDB.
+> With the WiredTiger storage engine, using XFS is *strongly recommended* for data bearing nodes to avoid performance issues that may occur when using EXT4 with WiredTiger.
 
 So far we have used an XFS filesystem, let's see if they are right and move our database to EXT4:
 ```
@@ -122,6 +123,8 @@ ansible-playbook -i hosts run_tests_ext4.yaml
 cat test_ext4_log.txt
 ```
 
+With this configuration the throughput goes up to TODO, while remaining stable
+TODO grafana
 
 Ouch! MongoDB production notes are wrong! Or maybe the optimal configuration depends on you workload?
 Let's find out with https://www.akamas.io/
