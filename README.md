@@ -6,6 +6,7 @@ To do this, we need to create an infrastructure composed by three components:
 * a master machine to collect data and orchestrate the experiments
 * a server machine running the MongoDB database
 * a client machine running the YCSB program, which we use to simulate load on the database
+
 We do not want to create everything manually, so we use ansible to automate the setup.
 
 ## Master node
@@ -19,7 +20,7 @@ sudo apt install -y ansible
 exit
 ```
 
-And copy your private key from your pc to the new instance. In this way the master node will be able to connect to the two other instances:
+And copy your private key from your pc to the new instance. In this way the master node will be able to connect to the two other instances that we will create in a moment:
 ```
 scp -i [your_private_key]  [your_private_key] ubuntu@[master_ip]:.ssh/id_rsa
 ```
@@ -76,7 +77,7 @@ You can look at the mongo.ods file for the analysis, but the takeaway message is
 As we said, after the initial short tests we run a longer one. In this test we are not only interested in the *average* throughput obtain during the whole test, but we are interested in how stable is the throughput.
 As the test proceeds we observe that, after a while (~ half an hour), the throughput _drammatically_ drops (you can also view this on the second page of the spreadsheet).
 
-At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618989229211&to=1618994400198&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://18.191.27.124:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618989229211&to=1618994400198&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
 (login with user/user)
 
 By looking at the high iowait time in the CPU basic graph, we start to suspect a problem in the disk.
@@ -98,7 +99,7 @@ cat test_raid_log.txt
 
 With the 4-disk RAID, we see that the database has become slower (X_max=3467 ops/sec), but at least the throughput is stable.
 Looking at the grafana dashboard, we do not see any sudden change in the metrics:
-http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618994250466&to=1618998649012&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+http://18.191.27.124:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618994250466&to=1618998649012&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
 Hoewer, we see that we still have a very high iowait.
 
 
@@ -124,7 +125,7 @@ cat test_ext4_log.txt
 ```
 
 With this configuration the throughput goes up to 4510 ops/sec, while remaining stable
-http://3.22.116.66:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1619006877305&to=1619011158033&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+http://18.191.27.124:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1619006877305&to=1619011158033&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
 
 
 Ouch! MongoDB production notes are wrong! Or maybe the optimal configuration depends on you workload?
