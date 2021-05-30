@@ -77,7 +77,7 @@ You can look at the mongo.ods file for the analysis, but the takeaway message is
 As we said, after the initial short tests we run a longer one. In this test we are not only interested in the *average* throughput obtain during the whole test, but we are interested in how stable is the throughput.
 As the test proceeds we observe that, after a while (~ half an hour), the throughput _drammatically_ drops (you can also view this on the second page of the spreadsheet).
 
-At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://18.191.27.124:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618989229211&to=1618994400198&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://18.191.201.197:3000/dashboard/snapshot/1TEkzNz1197BmyirMVIBELlvK48Wz2n2
 (login with user/user)
 
 By looking at the high iowait time in the CPU basic graph, we start to suspect a problem in the disk.
@@ -98,8 +98,7 @@ cat test_raid_log.txt
 ```
 
 With the 4-disk RAID, we see that the database has become slower (X_max=3467 ops/sec), but at least the throughput is stable.
-Looking at the grafana dashboard, we do not see any sudden change in the metrics:
-http://18.191.27.124:3000/d/rYdddlPWk/node-exporter-full?orgId=1&from=1618994250466&to=1618998649012&var-prometheus=prometheus&var-job=mongodb-server&var-node=MongoDB&var-diskdevices=%5Ba-z%5D%2B%7Cnvme%5B0-9%5D%2Bn%5B0-9%5D%2B
+Looking at the grafana dashboard, we do not see any sudden change in the metrics: http://18.191.201.197:3000/dashboard/snapshot/QpLv6Btc0WsHRz0ORMKBlG77DzQxFlub
 Hoewer, we see that we still have a very high iowait.
 
 
@@ -110,6 +109,7 @@ ansible-playbook -i hosts run_tests_noraid.yaml
 cat test_noraid_log.txt
 ```
 The throughput is stable, and equal to the one we had with the RAID! Essentialy we have reduced cost by 75%, whitout impacting performance.
+Here is the grafana dashboard: 
 
 
 ## Changing the filesystem
