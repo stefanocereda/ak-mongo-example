@@ -26,9 +26,9 @@ scp -i [your_private_key]  [your_private_key] ubuntu@[master_ip]:.ssh/id_rsa
 ```
 
 ## YCSB and MongoDB nodes
-Now go on AWS and create two other instances: the client and the master node. For both of them we use c4.large instances, on the server one we use a larger disk: 15GB.
+Now go on AWS and create two other instances: the client and the server node. For both of them we use c4.large instances, on the server one we use a larger disk: 15GB.
 Notice that we could use ansible also to automate the instance creation process.
-Start by copying the ansible directory (close to this readme) to the master node, then insert the public and private addresses of the new instances in the hosts file:
+Start by copying the ansible directory (close to this readme) to the master node, then insert the private addresses of the new instances in the hosts file:
 ```
 scp -i [your_private_key] -r ./ansible ubuntu@[master_ip]:
 ssh -i [your_private_key] ubuntu@[master_ip]
@@ -74,15 +74,15 @@ You can look at the mongo.ods file for the analysis, but the takeaway message is
 
 
 ## A longer test
-As we said, after the initial short tests we run a longer one. In this test we are not only interested in the *average* throughput obtain during the whole test, but we are interested in how stable is the throughput.
+As we said, after the initial short tests we run a longer one. In this test we are not only interested in the *average* throughput obtained during the whole test, but we are interested in how stable is the throughput.
 As the test proceeds we observe that, after a while (~ half an hour), the throughput _drammatically_ drops (you can also view this on the second page of the spreadsheet).
 
-At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://3.128.246.163:3000/dashboard/snapshot/1TEkzNz1197BmyirMVIBELlvK48Wz2n2
+At this point we recognize that we have a performance problem, and use the monitoring platform we installed with ansible to understand what is the problem: http://18.216.234.141:3000/dashboard/snapshot/N7kzee0T05dbfvDFBIaoBm4FA0HlN0Ub 
 (login with user/user)
 
 By looking at the high iowait time in the CPU basic graph, we start to suspect a problem in the disk.
 We then move to the Storage Disk panel, and observe a drop in the disk IOPS and R/W values.
-At this point we immediately detect our mistake: we are running our DBMS on an Amazon instance with a burstable amount of IOPS, meaning that we can substain high IO rates for a certain amount of time, but then they will be reduced.
+At this point we can detect our mistake: we are running our DBMS on an Amazon instance with a burstable amount of IOPS, meaning that we can substain high IO rates for a certain amount of time, but then they will be reduced.
 (Notice, however, that we need to already have this piece of information in order to detect the problem.)
 
 At this point we decide to move the database to another disk, which is not burstable. While we're at it, we also decide to use a RAID-0, which should give use much higher performance.
